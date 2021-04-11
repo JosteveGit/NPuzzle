@@ -1,4 +1,4 @@
-import 'package:eight_puzzle/pages/playground_page.dart';
+import 'package:eight_puzzle/pages/empty.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: PlaygroundPage()
+      home: EmptyPage()
     );
   }
 }

@@ -7,11 +7,10 @@ class PlaygroundPage extends StatefulWidget {
   _PlaygroundPageState createState() => _PlaygroundPageState();
 }
 
-class _PlaygroundPageState extends State<PlaygroundPage> {
-  List<Offset> initialOffsets = [];
-  List<Offset> solvedStateOffsets = [];
-  Offset emptySlotOffset;
+List<Offset> solvedStateOffsets = [];
+List<Offset> initialOffsets = [];
 
+class _PlaygroundPageState extends State<PlaygroundPage> {
   @override
   initState() {
     super.initState();
@@ -33,65 +32,118 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       }
       solvedStateOffsets = List.generate(
           initialOffsets.length, (index) => initialOffsets[index]);
-      emptySlotOffset = initialOffsets.last;
     });
   }
 
   int previousMoveIndex;
 
-  void solve() async {
-    List<Offset> connectedTiles = getConnectedTilesOffsets();
-    List<Offset> clonedOffsets =
-        List.generate(initialOffsets.length, (index) => initialOffsets[index]);
-    Offset clonedEmptySlotOffset = emptySlotOffset;
+  List<Offset> getConnectedTilesOffsets(Offset emptySlotOffset) {
+    var tile1 = Offset(emptySlotOffset.dx - 217.0, emptySlotOffset.dy);
+    var tile2 = Offset(emptySlotOffset.dx + 217.0, emptySlotOffset.dy);
+    var tile3 = Offset(emptySlotOffset.dx, emptySlotOffset.dy - 217.0);
+    var tile4 = Offset(emptySlotOffset.dx, emptySlotOffset.dy + 217.0);
+    List<Offset> connectedTilesOffsets = [];
+    void addIfExists(Offset tile) {
+      if (solvedStateOffsets.contains(tile)) {
+        connectedTilesOffsets.add(tile);
+      }
+    }
 
-    List<OffsetsAndHeuristicValue> o = [];
+    addIfExists(tile1);
+    addIfExists(tile2);
+    addIfExists(tile3);
+    addIfExists(tile4);
+    return connectedTilesOffsets;
+  }
 
+  OffsetsAndHeuristicValue getBestFit(
+      {List<Offset> mainOffsets, int cost = 1}) {
+    var connectedTiles = getConnectedTilesOffsets(mainOffsets.last);
+    var clonedOffsets =
+        List.generate(mainOffsets.length, (i) => mainOffsets[i]);
+
+    var clonedEmptySlotOffset = mainOffsets.last;
+
+    List<OffsetsAndHeuristicValue> cases = [];
     connectedTiles.forEach((connectedTileOffset) {
       //Swap.
-      Offset tempEmptySlotOffset = clonedEmptySlotOffset;
-      clonedEmptySlotOffset = connectedTileOffset;
-      int index = clonedOffsets.indexOf(connectedTileOffset);
-      clonedOffsets.removeAt(index);
-      clonedOffsets.insert(index, tempEmptySlotOffset);
+      var tempEmptySlotOffset = clonedOffsets.last;
+      var index = clonedOffsets.indexOf(connectedTileOffset);
+      clonedOffsets.last = connectedTileOffset;
+      clonedOffsets[index] = tempEmptySlotOffset;
 
       //Calculate Heursitic Value.
       if (previousMoveIndex != null) {
         if (index != previousMoveIndex) {
-          o.add(heuristicFunction(clonedOffsets: clonedOffsets)
-            ..indexMoved = index);
+          List<Offset> x = List.generate(
+              clonedOffsets.length, (index) => clonedOffsets[index]);
+
+          cases.add(heuristicFunction(clonedOffsets: x)
+            ..indexMoved = index
+            ..cost = cost);
         }
       } else {
-        o.add(heuristicFunction(clonedOffsets: clonedOffsets)
-          ..indexMoved = index);
+        List<Offset> x = List.generate(
+            clonedOffsets.length, (index) => clonedOffsets[index]);
+        cases.add(heuristicFunction(clonedOffsets: x)
+          ..indexMoved = index
+          ..cost = cost);
       }
 
-      //Set back.
-      clonedOffsets = List.generate(
-          initialOffsets.length, (index) => initialOffsets[index]);
-      clonedEmptySlotOffset = emptySlotOffset;
+      clonedOffsets =
+          List.generate(mainOffsets.length, (index) => mainOffsets[index]);
+      clonedOffsets.last = mainOffsets.last;
     });
 
-    o.sort((a, b) {
+    cases.sort((a, b) {
       return a.heuristicValue.compareTo(b.heuristicValue);
     });
 
-    OffsetsAndHeuristicValue bestFit = o.first;
-    Offset tileToMoveOffset = initialOffsets[bestFit.indexMoved];
-    previousMoveIndex = bestFit.indexMoved;
+    var bestFit = cases.first;
+    var bests = cases
+        .where((element) => element.heuristicValue == bestFit.heuristicValue);
+    if (bests.length > 1) {
+      int bestH;
+      OffsetsAndHeuristicValue v;
+      bests.forEach((best) {
+        var fit = getBestFit(mainOffsets: best.offset, cost: cost + 1);
+        var h = fit.heuristicValue + fit.cost;
+        print(fit);
 
-    setState(() {
-      Offset tempEmptySlotOffset = emptySlotOffset;
-      emptySlotOffset = tileToMoveOffset;
-      initialOffsets.removeAt(bestFit.indexMoved);
-      initialOffsets.insert(bestFit.indexMoved, tempEmptySlotOffset);
-    });
-
-    await Future.delayed(Duration(milliseconds: 200));
-
-    if (bestFit.heuristicValue != 0) {
-      solve();
+        if (bestH == null) {
+          v = best;
+          bestH = h;
+        } else {
+          if (bestH > h) {
+            v = best;
+            bestH = h;
+          }
+        }
+      });
+      return v;
     }
+
+    return bestFit;
+  }
+
+  void play(List scramble) async {
+    Timer.periodic(Duration(milliseconds: 200), (timer) {
+      var bestFit = (getBestFit(mainOffsets: scramble));
+      Offset tileToMoveOffset = initialOffsets[bestFit.indexMoved];
+      previousMoveIndex = bestFit.indexMoved;
+
+      setState(() {
+        Offset tempEmptySlotOffset = initialOffsets.last;
+        initialOffsets.last = tileToMoveOffset;
+        initialOffsets.removeAt(bestFit.indexMoved);
+        initialOffsets.insert(bestFit.indexMoved, tempEmptySlotOffset);
+      });
+      scramble = bestFit.offset;
+      if (bestFit.heuristicValue == 0) {
+        timer.cancel();
+        previousMoveIndex = null;
+      }
+    });
   }
 
   OffsetsAndHeuristicValue heuristicFunction({List<Offset> clonedOffsets}) {
@@ -103,7 +155,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     // }
 
     int manhattanValue = 0;
-    for (var i = 0; i < clonedOffsets.length; i++) {
+    for (var i = 0; i < clonedOffsets.length - 1; i++) {
       var clonedRowValue = (i / 3).floor();
       var clonedColumnValue = i % 3;
 
@@ -128,38 +180,19 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       if (count == 10) {
         timer.cancel();
       }
-      List<Offset> connectedTiles = getConnectedTilesOffsets();
+      List<Offset> connectedTiles = getConnectedTilesOffsets(initialOffsets.last);
       Offset tileToMoveOffset =
           connectedTiles[Random().nextInt(connectedTiles.length)];
       //swap;
       int index = initialOffsets.indexOf(tileToMoveOffset);
       setState(() {
-        Offset tempEmptySlotOffset = emptySlotOffset;
-        emptySlotOffset = tileToMoveOffset;
+        Offset tempEmptySlotOffset = initialOffsets.last;
+        initialOffsets.last = tileToMoveOffset;
         initialOffsets.removeAt(index);
         initialOffsets.insert(index, tempEmptySlotOffset);
       });
       count++;
     });
-  }
-
-  List<Offset> getConnectedTilesOffsets() {
-    Offset tile1 = Offset(emptySlotOffset.dx - 217.0, emptySlotOffset.dy);
-    Offset tile2 = Offset(emptySlotOffset.dx + 217.0, emptySlotOffset.dy);
-    Offset tile3 = Offset(emptySlotOffset.dx, emptySlotOffset.dy - 217.0);
-    Offset tile4 = Offset(emptySlotOffset.dx, emptySlotOffset.dy + 217.0);
-    List<Offset> connectedTilesOffsets = [];
-    void addIfExists(Offset tile) {
-      if (initialOffsets.contains(tile)) {
-        connectedTilesOffsets.add(tile);
-      }
-    }
-
-    addIfExists(tile1);
-    addIfExists(tile2);
-    addIfExists(tile3);
-    addIfExists(tile4);
-    return connectedTilesOffsets;
   }
 
   @override
@@ -187,10 +220,10 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                       return Tile(
                         initialOffset: initialOffsets[index],
                         number: position.toString(),
-                        emptySlotOffset: emptySlotOffset,
+                        emptySlotOffset: initialOffsets.last,
                         onTap: (newEmptyOffset, newTileOffset) {
                           setState(() {
-                            emptySlotOffset = newEmptyOffset;
+                            initialOffsets.last = newEmptyOffset;
                             initialOffsets.removeAt(index);
                             initialOffsets.insert(index, newTileOffset);
                           });
@@ -204,13 +237,13 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
             RaisedButton(
               child: Text("Shuffle"),
               onPressed: () {
-                shuffle();
+                // shuffle();
               },
             ),
             RaisedButton(
               child: Text("Solve"),
               onPressed: () {
-                solve();
+                play(initialOffsets);
               },
             ),
           ],
@@ -312,12 +345,27 @@ class OffsetsAndHeuristicValue {
   final List<Offset> offset;
   final int heuristicValue;
   int indexMoved;
+  int cost;
 
   OffsetsAndHeuristicValue(this.offset, this.heuristicValue);
+
+  @override
+  String toString() {
+    return "OAHV(v: ${offsetToNumbers(offset)}, h: $heuristicValue, i: $indexMoved, c: $cost)";
+  }
 }
 
 class ListWrapper<T> {
   final List<T> list;
 
   ListWrapper(this.list);
+}
+
+String offsetToNumbers(List<Offset> offsets) {
+  String numbers = "";
+  solvedStateOffsets.forEach((element) {
+    int index = offsets.indexOf(element);
+    numbers += index == 8 ? "_" : (index + 1).toString();
+  });
+  return numbers;
 }
