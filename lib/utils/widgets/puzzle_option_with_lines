@@ -1,0 +1,76 @@
+class PuzzleOption extends StatelessWidget {
+  final int dimension;
+  const PuzzleOption({
+    Key key,
+    this.dimension,
+  }) : super(key: key);
+
+  //You are generating dimension - 1 number of vertical lines.
+  //You are generating dimension - 1 number of horizontal lines.
+
+  @override
+  Widget build(BuildContext context) {
+    int dimensionMinus1 = dimension - 1;
+    return Column(
+      children: [
+        Stack(
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: baseColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            //Generate horizontal lines
+            ...List.generate(
+              dimensionMinus1,
+              (index) {
+                return Positioned(
+                  top: (100 / dimension) * (index + 1),
+                  child: Container(
+                    height: 1,
+                    width: 100,
+                    color: Colors.blueAccent.withOpacity(0.7),
+                  ),
+                );
+              },
+            ),
+            //Generate vertical lines
+            ...List.generate(
+              dimensionMinus1,
+              (index) {
+                return Positioned(
+                  left: (100 / dimension) * (index + 1),
+                  child: Container(
+                    height: 100,
+                    width: 1,
+                    color: Colors.blueAccent.withOpacity(0.7),
+                  ),
+                );
+              },
+            ),
+
+            // Positioned(
+            //   left: 100 / 2,
+            //   child: Container(
+            //     height: 100,
+            //     width: 1,
+            //     color: Colors.blueAccent.withOpacity(0.7),
+            //   ),
+            // ),
+          ],
+        ),
+        SizedBox(height: 10),
+        Text(
+          "${(dimension * dimension)-1} puzzle",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        )
+      ],
+    );
+  }
+}

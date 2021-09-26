@@ -6,110 +6,186 @@ import 'package:eight_puzzle/core/search.dart';
 import 'package:eight_puzzle/core/shuffle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:image/image.dart' as image;
 
-class EmptyPage extends StatefulWidget {
+class NPuzzle extends StatefulWidget {
+  final String image;
+  final int dimensions;
+
+  const NPuzzle({Key key, this.image, this.dimensions}) : super(key: key);
   @override
-  _EmptyPageState createState() => _EmptyPageState();
+  _NPuzzleState createState() => _NPuzzleState();
 }
 
-class _EmptyPageState extends State<EmptyPage> {
-  List<int> state = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+class _NPuzzleState extends State<NPuzzle> {
+  @override
+  void initState() {
+    super.initState();
+    initBoardAndState();
+  }
+
+  int dimension = 0;
+
+  void initBoardAndState() {
+    dimension = widget.dimensions;
+    image = widget.image;
+    state = List.generate(dimension * dimension, (index) {
+      int number = index + 1;
+      if (number == dimension * dimension) {
+        return 0;
+      }
+      return number;
+    });
+    tileImages.clear();
+    setState(() {});
+  }
+
+  String image;
+
+  List<int> state = [];
   List<TileImage> tileImages = [];
 
   @override
   Widget build(BuildContext context) {
+    if (dimension != widget.dimensions || image != widget.image) {
+      initBoardAndState();
+    }
     int dimensions = sqrt(state.length).toInt();
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Row(
+    return Column(
+      children: [
+        Expanded(
+          child: Container(
+            width: 700,
+            height: 700,
+            child: FittedBox(
+              child: Stack(
+                children: [
+                  Transform.translate(
+                    offset: Offset(18, 18),
+                    child: Opacity(
+                      opacity: 0.2,
+                      child: Center(
+                        child: Opacity(
+                          opacity: 1,
+                          child: Breakable(
+                            imagePath: widget.image,
+                            getImages: (images) {
+                              setState(() {
+                                tileImages = List.generate(
+                                  state.length,
+                                  (index) {
+                                    int number = state[index];
+                                    return TileImage(
+                                      images[index],
+                                      number,
+                                    );
+                                  },
+                                );
+                              });
+                            },
+                            dimensions: sqrt(state.length).toInt(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Builder(builder: (context) {
+                    if (tileImages.length != state.length) {
+                      // return Center(
+                      //   child: Text(
+                      //     "Fetching",
+                      //     style: TextStyle(
+                      //       color: Colors.white
+                      //     ),
+                      //   ),
+                      // );
+                    }
+                    return Center(
+                      child: Container(
+                        height: 217 * (state.length / dimensions),
+                        width: 217 * (state.length / dimensions),
+                        child: Stack(
+                          children: List.generate(
+                            state.length,
+                            (index) {
+                              TileImage tileImage;
+                              int tileImageIndex = tileImages.indexWhere(
+                                (tileImage) => tileImage.number == index + 1,
+                              );
+                              if (tileImageIndex != -1) {
+                                tileImage = tileImages[tileImageIndex];
+                              }
+                              return Tile(
+                                numberTag: index + 1,
+                                indexOfNumberTag: state.indexOf(index + 1),
+                                indexOfEmpty: state.indexOf(0),
+                                dimensions: dimensions,
+                                tileImage: tileImage,
+                                onTap: (indexOfNumberTag, indexOfEmpty) {
+                                  setState(() {
+                                    int temp = state[indexOfNumberTag];
+                                    state[indexOfNumberTag] =
+                                        state[indexOfEmpty];
+                                    state[indexOfEmpty] = temp;
+                                  });
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                        margin: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Breakable(
-              getImages: (images) {
-                setState(() {
-                  tileImages = List.generate(
-                    state.length,
-                    (index) {
-                      int number = state[index];
-                      return TileImage(
-                        images[index],
-                        number,
-                      );
-                    },
-                  );
-                  print(tileImages);
-                });
+            OutlinedButton(
+              onPressed: () {
+                shuffleState();
               },
-              child: Center(
-                child: Container(
-                  color: Colors.white,
-                  width: 651,
-                  height: 651,
-                  child: Image.asset(
-                    "assets/woman.jpg",
-                    fit: BoxFit.cover,
-                  ),
+              child: Text(
+                "Shuffle",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              style: ButtonStyle(
+                padding: MaterialStateProperty.all(
+                  EdgeInsets.symmetric(horizontal: 50, vertical: 20),
                 ),
               ),
             ),
-            Container(
-              height: 217 * (state.length / dimensions),
-              width: 217 * (state.length / dimensions),
-              child: Stack(
-                children: List.generate(
-                  state.length,
-                  (index) {
-                    TileImage tileImage;
-                    int tileImageIndex = tileImages.indexWhere(
-                      (tileImage) => tileImage.number == index + 1,
-                    );
-                    if(tileImageIndex != -1){
-                      tileImage = tileImages[tileImageIndex];
-                    }
-                    return Tile(
-                      numberTag: index + 1,
-                      indexOfNumberTag: state.indexOf(index + 1),
-                      indexOfEmpty: state.indexOf(0),
-                      dimensions: dimensions,
-                      tileImage: tileImage,
-                      onTap: (indexOfNumberTag, indexOfEmpty) {
-                        setState(() {
-                          int temp = state[indexOfNumberTag];
-                          state[indexOfNumberTag] = state[indexOfEmpty];
-                          state[indexOfEmpty] = temp;
-                        });
-                      },
-                    );
-                  },
+            SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: () {
+                solveState();
+              },
+              child: Text(
+                "Solve",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
-              margin: EdgeInsets.all(20),
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.orange)),
+              style: ButtonStyle(
+                padding: MaterialStateProperty.all(
+                  EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                ),
+              ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                RaisedButton(
-                  onPressed: () {
-                    shuffleState();
-                  },
-                  child: Text("Shuffle"),
-                ),
-                SizedBox(width: 10),
-                RaisedButton(
-                  onPressed: () {
-                    solveState();
-                  },
-                  child: Text("Solve"),
-                ),
-              ],
-            )
           ],
-        ),
-      ),
+        )
+      ],
     );
   }
 
@@ -210,19 +286,19 @@ class _TileState extends State<Tile> {
         child: Container(
           width: 217,
           height: 217,
-          color: Colors.blueGrey,
+          color: Colors.transparent,
           child: Center(
             child: Stack(
               children: [
-                Text(
-                  widget.numberTag.toString(),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 50,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-               if(widget.tileImage != null) widget.tileImage.image,
+                // Text(
+                //   widget.numberTag.toString(),
+                //   style: TextStyle(
+                //     color: Colors.white,
+                //     fontSize: 50,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
+                if (widget.tileImage != null) widget.tileImage.image,
               ],
             ),
           ),
@@ -255,8 +331,16 @@ class _TileState extends State<Tile> {
 class Breakable extends StatefulWidget {
   final Widget child;
   final Function(List<Image> images) getImages;
+  final int dimensions;
+  final String imagePath;
 
-  const Breakable({Key key, this.child, this.getImages}) : super(key: key);
+  const Breakable(
+      {Key key,
+      this.child,
+      this.getImages,
+      this.dimensions = 3,
+      this.imagePath})
+      : super(key: key);
 
   @override
   _BreakableState createState() => _BreakableState();
@@ -265,49 +349,80 @@ class Breakable extends StatefulWidget {
 class _BreakableState extends State<Breakable> {
   GlobalKey _globalKey = GlobalKey();
   Size size;
+  int dimensions = 0;
+  String imagePath;
 
   List<Image> images = [];
 
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 1), () async {
-      RenderRepaintBoundary boundary =
-          _globalKey.currentContext.findRenderObject();
-      //cache image for later
-      size = boundary.size;
-      var img = await boundary.toImage();
-      var byteData = await img.toByteData(format: ImageByteFormat.png);
-      var pngBytes = byteData.buffer.asUint8List();
-      widget.getImages(splitImage(pngBytes));
-    });
+    snap();
+  }
+
+  void snap() async {
+    dimensions = widget.dimensions;
+    imagePath = widget.imagePath;
+    String key = "$imagePath#$dimensions";
+    if (cache.containsKey(key)) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        widget.getImages(cache[key]);
+      });
+    } else {
+      var data = await rootBundle.load('assets/${widget.imagePath}.jpg');
+      var pngBytes = data.buffer.asUint8List();
+      List<Image> images = splitImage(pngBytes, widget.dimensions);
+      cache.putIfAbsent(key, () => images);
+      widget.getImages(images);
+      // Timer(Duration(milliseconds: 500), () async {
+      //   // RenderRepaintBoundary boundary =
+      //   //     _globalKey.currentContext.findRenderObject();
+      //   // //cache image for later
+      //   // size = boundary.size;
+      //   //      // var img = await boundary.toImage();
+      //   // var byteData = await img.toByteData(format: ImageByteFormat.png);
+      // });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.blue,
-      height: 651,
-      width: 651,
-      child: RepaintBoundary(
-        key: _globalKey,
-        child: widget.child,
+    if (dimensions != widget.dimensions || imagePath != widget.imagePath) {
+      snap();
+    }
+    return RepaintBoundary(
+      key: _globalKey,
+      child: Center(
+        child: Container(
+          color: Colors.white,
+          width: 217 * (pow(widget.dimensions, 2) / widget.dimensions),
+          height: 217 * (pow(widget.dimensions, 2) / widget.dimensions),
+          child: Image.asset(
+            "assets/${widget.imagePath}.jpg",
+            fit: BoxFit.cover,
+          ),
+        ),
       ),
     );
   }
 
-  List<Image> splitImage(List<int> input) {
+  List<Image> splitImage(List<int> input, int dimensions) {
     // convert image to image from image package
     image.Image img = image.decodeImage(input);
+    var now = DateTime.now();
+    img = image.copyResizeCropSquare(img, 217 * (pow(dimensions, 2) ~/ dimensions));
+    var newNow = DateTime.now();
+    print(now);
+    print(newNow);
 
     int x = 0, y = 0;
-    int width = (img.width / 3).round();
-    int height = (img.height / 3).round();
+    int width = (img.width / dimensions).round();
+    int height = (img.height / dimensions).round();
 
     // split image to parts
     List<image.Image> parts = [];
-    for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 3; j++) {
+    for (int i = 0; i < dimensions; i++) {
+      for (int j = 0; j < dimensions; j++) {
         parts.add(image.copyCrop(img, x, y, width, height));
         x += width;
       }
@@ -324,6 +439,8 @@ class _BreakableState extends State<Breakable> {
     return output;
   }
 }
+
+Map<String, List<Image>> cache = {};
 
 class TileImage {
   final Image image;
