@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:eight_puzzle/core/models/node.dart';
 
-
 class Solver {
   static _NextSearchDetails _search({
     Node node,
@@ -64,10 +63,9 @@ class Solver {
     return bestNode;
   }
 
-  static void solve({
+  static Node solve(
     Node node,
-    Function(Node node, int steps) onFinalNode,
-  }) {
+  ) {
     Node nextNode = node;
     Map expandedNodes = {};
     int maxExpandedNodesLength = 0;
@@ -89,7 +87,7 @@ class Solver {
       frontierList = nextSearchDetails.frontierListx;
       step++;
     }
-    onFinalNode(nextNode, step);
+    return nextNode;
   }
 }
 

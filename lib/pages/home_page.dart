@@ -4,16 +4,21 @@ import 'package:eight_puzzle/utils/widgets/puzzle_image.dart';
 import 'package:eight_puzzle/utils/widgets/puzzle_option.dart';
 import 'package:flutter/material.dart';
 
-class DesignPage extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  _DesignPageState createState() => _DesignPageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _DesignPageState extends State<DesignPage> {
+class _HomePageState extends State<HomePage> {
   int selectedImageIndex = 0;
   int selectedOptionIndex = 0;
 
-  List<String> images = ["man", "woman",  "music", "girl",];
+  List<String> images = [
+    "man",
+    "woman",
+    "music",
+    "girl",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -62,41 +67,47 @@ class _DesignPageState extends State<DesignPage> {
                     ),
                   ),
                   SizedBox(height: 40),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 15,
-                          horizontal: 20,
-                        ),
-                        child: Row(
-                          children: List.generate(
-                            3,
-                            (index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedOptionIndex = index;
-                                  });
+                  Container(
+                    width: 700,
+                    height: 200,
+                    child: FittedBox(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 15,
+                              horizontal: 20,
+                            ),
+                            child: Row(
+                              children: List.generate(
+                                3,
+                                (index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedOptionIndex = index;
+                                      });
+                                    },
+                                    child: PuzzleOption(
+                                      dimension: (index + 2),
+                                      isSelected: selectedOptionIndex == index,
+                                      margin: EdgeInsets.only(
+                                        right: index == 3 ? 0 : 10,
+                                      ),
+                                    ),
+                                  );
                                 },
-                                child: PuzzleOption(
-                                  dimension: (index + 2),
-                                  isSelected: selectedOptionIndex == index,
-                                  margin: EdgeInsets.only(
-                                    right: index == 3 ? 0 : 10,
-                                  ),
-                                ),
-                              );
-                            },
+                              ),
+                            ),
+                            decoration: BoxDecoration(
+                              color: baseColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
-                        ),
-                        decoration: BoxDecoration(
-                          color: baseColor,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -111,19 +122,16 @@ class _DesignPageState extends State<DesignPage> {
               child: Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle
-                    ),
-                    child: Center(
-                      child: Image.asset(
-                        "assets/github.png",
-                        width: 50,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  ),
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: Colors.white, shape: BoxShape.circle),
+                      child: Center(
+                        child: Image.asset(
+                          "assets/github.png",
+                          width: 50,
+                          fit: BoxFit.cover,
+                        ),
+                      )),
                   Spacer(),
                   Text(
                     "Built\nwith\nFlutter 💙",

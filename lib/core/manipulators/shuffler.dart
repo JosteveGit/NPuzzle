@@ -1,11 +1,10 @@
 import 'dart:math';
 import 'package:eight_puzzle/core/models/game.dart';
 
-
 class Shuffler {
   static void shuffle({
     List<int> state,
-    Function(List<int> state) onShuffle,
+    bool Function(List<int> state) onShuffle,
     int moves,
   }) async {
     Game game = Game(state);
@@ -15,9 +14,13 @@ class Shuffler {
       var action = actionAndState.keys.toList()[random];
       List<int> nextState = actionAndState[action];
       game = Game(nextState);
-      onShuffle(nextState);
-      await Future.delayed(Duration(milliseconds: 200));
-      moves--;
+      bool shouldContinue = onShuffle(nextState);
+      if (shouldContinue) {
+        await Future.delayed(Duration(milliseconds: 200));
+        moves--;
+      } else {
+        break;
+      }
     }
   }
 }

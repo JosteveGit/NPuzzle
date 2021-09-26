@@ -40,7 +40,7 @@ class TileUtils {
         img, 217 * (pow(dimensions, 2) ~/ dimensions));
     var newNow = DateTime.now();
     print(now);
-    print(newNow);
+    print(newNow.difference(now));
 
     int x = 0, y = 0;
     int width = (img.width / dimensions).round();
