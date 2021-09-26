@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
-import 'package:eight_puzzle/core/node.dart';
-import 'package:eight_puzzle/core/search.dart';
-import 'package:eight_puzzle/core/shuffle.dart';
+import 'package:eight_puzzle/core/manipulators/shuffler.dart';
+import 'package:eight_puzzle/core/manipulators/solver.dart';
+import 'package:eight_puzzle/core/models/node.dart';
 import 'package:eight_puzzle/utils/functions/tile_utils.dart';
-import 'package:eight_puzzle/utils/widgets/n_puzzle/tile.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import 'game_mirror.dart';
+import 'tile.dart';
 
 class NPuzzle extends StatefulWidget {
   final String image;
@@ -186,7 +187,7 @@ class _NPuzzleState extends State<NPuzzle> {
   }
 
   void shuffleState() {
-    shuffle(
+    Shuffler.shuffle(
       state: state,
       onShuffle: (nextState) {
         setState(() {
@@ -198,9 +199,8 @@ class _NPuzzleState extends State<NPuzzle> {
   }
 
   void solveState() {
-    solve(
+    Solver.solve(
       node: Node(stateList: state),
-      onNextNode: (nextNode) {},
       onFinalNode: (finalNode, _) async {
         Node bestNode = finalNode;
         List<List<int>> states = [];
