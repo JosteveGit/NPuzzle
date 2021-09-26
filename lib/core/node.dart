@@ -36,7 +36,7 @@ class Node {
 
   @override
   String toString() {
-    return "Node(state: ${stateList}, cost: $cost, action: ${action.toString()}, heurisitcVale: ${game.getManhattanDistance() + cost})";
+    return "Node(state: $stateList, cost: $cost, action: ${action.toString()}, heurisitcVale: ${game.getManhattanDistance() + cost})";
   }
 
   String get state => stateList.join("");

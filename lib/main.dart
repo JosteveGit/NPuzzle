@@ -1,7 +1,5 @@
-import 'package:eight_puzzle/pages/empty.dart';
 import 'package:flutter/material.dart';
-
-import 'pages/design.dart';
+import 'pages/design_page.dart';
 
 void main() {
   runApp(MyApp());

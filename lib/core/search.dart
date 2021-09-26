@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'node.dart';
 
-NextSearchDetails _search({
+_NextSearchDetails _search({
   Node node,
   List<Node> frontierListx,
   int maxFrontierListLengthx = 0,
@@ -39,14 +39,10 @@ NextSearchDetails _search({
   frontierList.addAll(expandedUnexploredList);
   maxFrontierListLength = max(maxFrontierListLength, frontierList.length);
 
-  var nextNode = _getNextNode(
-    frontierList,
-    onDone: (bestNode) {
-      frontierList.remove(bestNode);
-    },
-  );
+  var nextNode = _getNextNode(frontierList);
+  frontierList.remove(nextNode);
 
-  return NextSearchDetails(
+  return _NextSearchDetails(
     node: nextNode,
     frontierListx: frontierList,
     maxFrontierListLengthx: maxFrontierListLength,
@@ -55,18 +51,14 @@ NextSearchDetails _search({
   );
 }
 
-Node _getNextNode(List<Node> frontierList, {Function(Node bestNode) onDone}) {
+Node _getNextNode(List<Node> frontierList) {
   List<Node> a = frontierList;
   a.sort((a, b) {
     int aHeuristicValue = a.game.getManhattanDistance() + a.cost;
     int bHeuristicValue = b.game.getManhattanDistance() + b.cost;
     return aHeuristicValue.compareTo(bHeuristicValue);
   });
-
   Node bestNode = a.first;
-
-  onDone(bestNode);
-
   return bestNode;
 }
 
@@ -82,7 +74,7 @@ void solve({
   List<Node> frontierList = [];
   int step = 0;
   while (!nextNode.game.isFinished()) {
-    NextSearchDetails nextSearchDetails = _search(
+    _NextSearchDetails nextSearchDetails = _search(
       node: nextNode,
       expandedNodesx: expandedNodes,
       maxExpandedNodesLengthx: maxExpandedNodesLength,
@@ -100,14 +92,14 @@ void solve({
   onFinalNode(nextNode, step);
 }
 
-class NextSearchDetails {
+class _NextSearchDetails {
   final Node node;
   final List<Node> frontierListx;
   final int maxFrontierListLengthx;
   final int maxExpandedNodesLengthx;
   final Map expandedNodesx;
 
-  NextSearchDetails({
+  _NextSearchDetails({
     this.node,
     this.frontierListx,
     this.expandedNodesx,

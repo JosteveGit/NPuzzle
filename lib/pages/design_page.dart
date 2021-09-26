@@ -1,5 +1,5 @@
-import 'package:eight_puzzle/pages/empty.dart';
 import 'package:eight_puzzle/utils/styles/color_utils.dart';
+import 'package:eight_puzzle/utils/widgets/n_puzzle/n_puzzle.dart';
 import 'package:eight_puzzle/utils/widgets/puzzle_image.dart';
 import 'package:eight_puzzle/utils/widgets/puzzle_option.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +10,10 @@ class DesignPage extends StatefulWidget {
 }
 
 class _DesignPageState extends State<DesignPage> {
-  int selectedIndex = 0;
+  int selectedImageIndex = 0;
   int selectedOptionIndex = 0;
 
-  List<String> images = ["man", "woman",  "music", "girl"];
+  List<String> images = ["man", "woman",  "music", "girl",];
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +38,11 @@ class _DesignPageState extends State<DesignPage> {
                       return GestureDetector(
                         onTap: () {
                           setState(() {
-                            selectedIndex = index;
+                            selectedImageIndex = index;
                           });
                         },
                         child: PuzzleImage(
-                          isSelected: index == selectedIndex,
+                          isSelected: index == selectedImageIndex,
                           imagePath: images[index],
                         ),
                       );
@@ -57,7 +57,7 @@ class _DesignPageState extends State<DesignPage> {
                 children: [
                   Expanded(
                     child: NPuzzle(
-                      image: images[selectedIndex],
+                      image: images[selectedImageIndex],
                       dimensions: selectedOptionIndex + 2,
                     ),
                   ),
