@@ -3,11 +3,11 @@ import 'dart:math';
 import 'package:eight_puzzle/utils/styles/color_utils.dart';
 import 'package:flutter/material.dart';
 
-class PuzzleOption extends StatelessWidget {
+class PuzzleSizeOption extends StatelessWidget {
   final bool isSelected;
   final int dimension;
   final EdgeInsets margin;
-  const PuzzleOption({
+  const PuzzleSizeOption({
     Key key,
     this.dimension,
     this.isSelected = false,

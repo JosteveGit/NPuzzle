@@ -1,8 +1,10 @@
 import 'package:eight_puzzle/utils/styles/color_utils.dart';
+import 'package:eight_puzzle/utils/widgets/github.dart';
 import 'package:eight_puzzle/utils/widgets/n_puzzle/n_puzzle.dart';
-import 'package:eight_puzzle/utils/widgets/puzzle_image.dart';
-import 'package:eight_puzzle/utils/widgets/puzzle_option.dart';
+import 'package:eight_puzzle/utils/widgets/puzzle_image_selector.dart';
+import 'package:eight_puzzle/utils/widgets/puzzle_size_option_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,91 +22,169 @@ class _HomePageState extends State<HomePage> {
     "girl",
   ];
 
+  GlobalKey<ScaffoldState> s = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Container(
-        padding: EdgeInsets.all(40),
-        child: Row(
-          children: [
-            Container(
-              height: double.maxFinite,
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: baseColor,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: List.generate(
-                    images.length,
-                    (index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedImageIndex = index;
-                          });
-                        },
-                        child: PuzzleImage(
-                          isSelected: index == selectedImageIndex,
-                          imagePath: images[index],
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarBrightness: Brightness.dark,
+      ),
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        bool isSmall = constraints.maxWidth < 850;
+        return Scaffold(
+          key: s,
+          backgroundColor: Colors.black,
+          drawer: Offstage(
+            offstage: !isSmall,
+            child: Drawer(
+              child: Container(
+                color: Colors.black,
+                child: Container(
+                  color: baseColor,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).padding.top + 20,
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          child: Column(
+                            children: [
+                              Text(
+                                "Select Image",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Expanded(
+                                child: Container(
+                                  height: double.maxFinite,
+                                  child: PuzzleImageSelector(
+                                    selectedImageIndex: selectedImageIndex,
+                                    images: images,
+                                    size: 120,
+                                    onOptionTapped: (v) {
+                                      setState(() {
+                                        selectedImageIndex = v;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      );
-                    },
+                      ),
+                      GITHUB(),
+                      SizedBox(
+                        height: MediaQuery.of(context).padding.bottom + 10,
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            SizedBox(width: 20),
-            Expanded(
-              child: Column(
+          ),
+          body: SafeArea(
+            child: Container(
+              padding: EdgeInsets.all(isSmall ? 20 : 40),
+              child: Row(
                 children: [
-                  Expanded(
-                    child: NPuzzle(
-                      image: images[selectedImageIndex],
-                      dimensions: selectedOptionIndex + 2,
+                  Offstage(
+                    offstage: isSmall,
+                    child: Container(
+                      width: 290,
+                      margin: EdgeInsets.only(right: 20),
+                      height: double.maxFinite,
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: baseColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: PuzzleImageSelector(
+                        selectedImageIndex: selectedImageIndex,
+                        images: images,
+                        onOptionTapped: (v) {
+                          setState(() {
+                            selectedImageIndex = v;
+                          });
+                        },
+                      ),
                     ),
                   ),
-                  SizedBox(height: 40),
-                  Container(
-                    width: 700,
-                    height: 200,
-                    child: FittedBox(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 20,
-                            ),
-                            child: Row(
-                              children: List.generate(
-                                3,
-                                (index) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        selectedOptionIndex = index;
-                                      });
-                                    },
-                                    child: PuzzleOption(
-                                      dimension: (index + 2),
-                                      isSelected: selectedOptionIndex == index,
-                                      margin: EdgeInsets.only(
-                                        right: index == 3 ? 0 : 10,
-                                      ),
-                                    ),
-                                  );
-                                },
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Offstage(
+                          offstage: !isSmall,
+                          child: GestureDetector(
+                            onTap: () {
+                              s.currentState.openDrawer();
+                            },
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.menu_rounded,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                            decoration: BoxDecoration(
-                              color: baseColor,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
                           ),
+                        ),
+                        Expanded(
+                          child: NPuzzle(
+                            image: images[selectedImageIndex],
+                            dimensions: selectedOptionIndex + 2,
+                          ),
+                        ),
+                        SizedBox(height: 40),
+                        PuzzleSizeOptionSelector(
+                          selectedOptionIndex: selectedOptionIndex,
+                          onOptionTapped: (v) {
+                            setState(() {
+                              selectedOptionIndex = v;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Offstage(
+                    offstage: isSmall,
+                    child: Container(
+                      height: double.maxFinite,
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: baseColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Column(
+                        children: [
+                          GITHUB(),
+                          Spacer(),
+                          Text(
+                            "Built\nwith\nFlutter 💙",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -112,42 +192,9 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            Container(
-              height: double.maxFinite,
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: baseColor,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.white, shape: BoxShape.circle),
-                      child: Center(
-                        child: Image.asset(
-                          "assets/github.png",
-                          width: 50,
-                          fit: BoxFit.cover,
-                        ),
-                      )),
-                  Spacer(),
-                  Text(
-                    "Built\nwith\nFlutter 💙",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

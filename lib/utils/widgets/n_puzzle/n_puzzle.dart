@@ -69,8 +69,8 @@ class _NPuzzleState extends State<NPuzzle> {
       children: [
         Expanded(
           child: Container(
-            width: 600,
-            height: 600,
+            width: 700,
+            height: 700,
             child: FittedBox(
               child: Stack(
                 children: [
@@ -91,16 +91,6 @@ class _NPuzzleState extends State<NPuzzle> {
                   ),
                   Builder(
                     builder: (context) {
-                      if (tileImages.length != state.length) {
-                        // return Center(
-                        //   child: Text(
-                        //     "Fetching",
-                        //     style: TextStyle(
-                        //       color: Colors.white
-                        //     ),
-                        //   ),
-                        // );
-                      }
                       return Center(
                         child: Container(
                           height: 217 * (state.length / dimensions),
@@ -205,9 +195,7 @@ class _NPuzzleState extends State<NPuzzle> {
   }
 
   void solveState() async {
-    print("hey");
     Node bestNode = await compute(Solver.solve, Node(stateList: state));
-    print("hi");
     List<List<int>> states = [];
     while (bestNode.parent != null) {
       states.add(bestNode.stateList);

@@ -35,12 +35,10 @@ class TileUtils {
   static List<Image> _splitImage(List<int> input, int dimensions) {
     // convert image to image from image package
     image.Image img = image.decodeImage(input);
-    var now = DateTime.now();
     img = image.copyResizeCropSquare(
-        img, 217 * (pow(dimensions, 2) ~/ dimensions));
-    var newNow = DateTime.now();
-    print(now);
-    print(newNow.difference(now));
+      img,
+      217 * (pow(dimensions, 2) ~/ dimensions),
+    );
 
     int x = 0, y = 0;
     int width = (img.width / dimensions).round();
