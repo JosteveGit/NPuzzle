@@ -7,7 +7,6 @@ class TileImage {
   TileImage(this.image, this.number);
 }
 
-
 class Tile extends StatefulWidget {
   final int numberTag;
   final int indexOfNumberTag;
@@ -55,36 +54,39 @@ class _TileState extends State<Tile> {
       left: tileOffset.dx,
       top: tileOffset.dy,
       duration: Duration(milliseconds: 150),
-      child: GestureDetector(
-        onTap: () {
-          if (isConnectedToEmptySlot()) {
-            int index = widget.indexOfEmpty;
-            setState(() {
-              tileOffset = Offset(
-                (index % dimensions) * 217.0,
-                (index / dimensions).floor() * 217.0,
-              );
-            });
-            widget.onTap(widget.indexOfNumberTag, index);
-          }
-        },
-        child: Container(
-          width: 217,
-          height: 217,
-          color: Colors.transparent,
-          child: Center(
-            child: Stack(
-              children: [
-                // Text(
-                //   widget.numberTag.toString(),
-                //   style: TextStyle(
-                //     color: Colors.white,
-                //     fontSize: 50,
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                // ),
-                if (widget.tileImage != null) widget.tileImage.image,
-              ],
+      child: MouseRegion(
+        cursor:isConnectedToEmptySlot()  ? SystemMouseCursors.click : SystemMouseCursors.forbidden,
+        child: GestureDetector(
+          onTap: () {
+            if (isConnectedToEmptySlot()) {
+              int index = widget.indexOfEmpty;
+              setState(() {
+                tileOffset = Offset(
+                  (index % dimensions) * 217.0,
+                  (index / dimensions).floor() * 217.0,
+                );
+              });
+              widget.onTap(widget.indexOfNumberTag, index);
+            }
+          },
+          child: Container(
+            width: 217,
+            height: 217,
+            color: Colors.transparent,
+            child: Center(
+              child: Stack(
+                children: [
+                  // Text(
+                  //   widget.numberTag.toString(),
+                  //   style: TextStyle(
+                  //     color: Colors.white,
+                  //     fontSize: 50,
+                  //     fontWeight: FontWeight.bold,
+                  //   ),
+                  // ),
+                  if (widget.tileImage != null) widget.tileImage.image,
+                ],
+              ),
             ),
           ),
         ),

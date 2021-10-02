@@ -127,21 +127,24 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         Offstage(
                           offstage: !isSmall,
-                          child: GestureDetector(
-                            onTap: () {
-                              s.currentState.openDrawer();
-                            },
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.menu_rounded,
-                                  color: Colors.white,
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.contextMenu,
+                            child: GestureDetector(
+                              onTap: () {
+                                s.currentState.openDrawer();
+                              },
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.menu_rounded,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
