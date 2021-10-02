@@ -89,6 +89,20 @@ class Solver {
     }
     return nextNode;
   }
+
+  static void stop() {
+    _shouldSolve = false;
+  }
+
+  static bool get shouldNotSolve => !_shouldSolve;
+
+  static void reset() {
+    _shouldSolve = true;
+    isSolving = false;
+  }
+
+  static bool _shouldSolve = true;
+  static bool isSolving = false;
 }
 
 class _NextSearchDetails {

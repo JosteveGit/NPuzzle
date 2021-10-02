@@ -182,13 +182,21 @@ class _NPuzzleState extends State<NPuzzle> {
   }
 
   void shuffleState() {
+    Shuffler.isSuffling = true;
     Shuffler.shuffle(
       state: state,
       onShuffle: (nextState) {
+        if (Shuffler.shouldNotShuffle) {
+          Shuffler.reset();
+          return false;
+        }
         setState(() {
           state = nextState;
         });
         return true;
+      },
+      onDone: () {
+        Shuffler.isSuffling = false;
       },
       moves: 5 + Random().nextInt(50),
     );
@@ -197,15 +205,25 @@ class _NPuzzleState extends State<NPuzzle> {
   void solveState() async {
     Node bestNode = await compute(Solver.solve, Node(stateList: state));
     List<List<int>> states = [];
+    Solver.isSolving = true;
     while (bestNode.parent != null) {
+      if (Solver.shouldNotSolve) {
+        Solver.reset();
+        return;
+      }
       states.add(bestNode.stateList);
       bestNode = bestNode.parent;
     }
     for (int i = states.length - 1; i >= 0; i--) {
+      if (Solver.shouldNotSolve) {
+        Solver.reset();
+        break;
+      }
       setState(() {
         state = states[i];
       });
       await Future.delayed(Duration(milliseconds: 200));
     }
+    Solver.isSolving = false;
   }
 }

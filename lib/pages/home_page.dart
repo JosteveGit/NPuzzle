@@ -1,3 +1,5 @@
+import 'package:eight_puzzle/core/manipulators/shuffler.dart';
+import 'package:eight_puzzle/core/manipulators/solver.dart';
 import 'package:eight_puzzle/utils/styles/color_utils.dart';
 import 'package:eight_puzzle/utils/widgets/github.dart';
 import 'package:eight_puzzle/utils/widgets/n_puzzle/n_puzzle.dart';
@@ -155,6 +157,12 @@ class _HomePageState extends State<HomePage> {
                         PuzzleSizeOptionSelector(
                           selectedOptionIndex: selectedOptionIndex,
                           onOptionTapped: (v) {
+                            if (Solver.isSolving) {
+                              Solver.stop();
+                            }
+                            if (Shuffler.isSuffling) {
+                              Shuffler.stop();
+                            }
                             setState(() {
                               selectedOptionIndex = v;
                             });
