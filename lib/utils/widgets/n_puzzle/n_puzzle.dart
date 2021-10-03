@@ -182,7 +182,6 @@ class _NPuzzleState extends State<NPuzzle> {
   }
 
   void shuffleState() {
-    Shuffler.isSuffling = true;
     Shuffler.shuffle(
       state: state,
       onShuffle: (nextState) {
@@ -194,9 +193,6 @@ class _NPuzzleState extends State<NPuzzle> {
           state = nextState;
         });
         return true;
-      },
-      onDone: () {
-        Shuffler.isSuffling = false;
       },
       moves: 5 + Random().nextInt(50),
     );

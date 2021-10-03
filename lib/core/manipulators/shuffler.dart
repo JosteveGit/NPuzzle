@@ -9,6 +9,10 @@ class Shuffler {
     VoidCallback onDone,
     int moves,
   }) async {
+    if (Shuffler.isShuffling) {
+      return;
+    }
+    Shuffler.isShuffling = true;
     Game game = Game(state);
     while (moves != 0) {
       Map actionAndState = game.getAvaliableActionsAndStates();
@@ -24,7 +28,7 @@ class Shuffler {
         break;
       }
     }
-    onDone();
+    Shuffler.isShuffling = false;
   }
 
   static void stop() {
@@ -35,9 +39,9 @@ class Shuffler {
 
   static void reset() {
     _shouldShuggle = true;
-    isSuffling = false;
+    isShuffling = false;
   }
 
   static bool _shouldShuggle = true;
-  static bool isSuffling = false;
+  static bool isShuffling = false;
 }

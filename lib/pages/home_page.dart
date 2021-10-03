@@ -163,7 +163,7 @@ class _HomePageState extends State<HomePage> {
                             if (Solver.isSolving) {
                               Solver.stop();
                             }
-                            if (Shuffler.isSuffling) {
+                            if (Shuffler.isShuffling) {
                               Shuffler.stop();
                             }
                             setState(() {

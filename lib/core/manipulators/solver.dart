@@ -71,6 +71,7 @@ class Solver {
     int maxExpandedNodesLength = 0;
     int maxFrontierListLength = 0;
     List<Node> frontierList = [];
+    // ignore: unused_local_variable
     int step = 0;
     while (!nextNode.game.isFinished()) {
       _NextSearchDetails nextSearchDetails = _search(
