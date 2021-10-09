@@ -10,7 +10,7 @@ class GITHUB extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        String url = "";
+        String url = "https://github.com/JosteveGit/NPuzzle.git";
         if (await canLaunch(url)) {
           launch(url);
         }
