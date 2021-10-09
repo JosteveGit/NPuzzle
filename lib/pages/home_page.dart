@@ -77,6 +77,7 @@ class _HomePageState extends State<HomePage> {
                                       setState(() {
                                         selectedImageIndex = v;
                                       });
+                                      Navigator.pop(context);
                                     },
                                   ),
                                 ),
