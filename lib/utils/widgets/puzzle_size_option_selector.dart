@@ -26,7 +26,7 @@ class PuzzleSizeOptionSelector extends StatelessWidget {
               ),
               child: Row(
                 children: List.generate(
-                  3,
+                  2,
                   (index) {
                     return GestureDetector(
                       onTap: () {
