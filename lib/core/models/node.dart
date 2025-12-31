@@ -2,13 +2,13 @@ import 'game.dart';
 
 class Node {
   List<int> stateList;
-  Node parent;
+  Node? parent;
   int cost;
-  GameAction action;
-  Game game;
+  GameAction? action;
+  late Game game;
 
   Node({
-    this.stateList,
+    required this.stateList,
     this.parent,
     this.cost = 0,
     this.action,

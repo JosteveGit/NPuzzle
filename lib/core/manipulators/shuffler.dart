@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 
 class Shuffler {
   static void shuffle({
-    List<int> state,
-    bool Function(List<int> state) onShuffle,
-    VoidCallback onDone,
-    int moves,
+    required List<int> state,
+    required bool Function(List<int> state) onShuffle,
+    VoidCallback? onDone,
+    required int moves,
   }) async {
     if (Shuffler.isShuffling) {
       return;

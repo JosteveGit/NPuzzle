@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                             cursor: SystemMouseCursors.contextMenu,
                             child: GestureDetector(
                               onTap: () {
-                                s.currentState.openDrawer();
+                                s.currentState?.openDrawer();
                               },
                               child: Align(
                                 alignment: Alignment.centerLeft,

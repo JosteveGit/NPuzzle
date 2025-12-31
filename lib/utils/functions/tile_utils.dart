@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:eight_puzzle/utils/widgets/n_puzzle/tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,9 +9,9 @@ class TileUtils {
   static Map<String, List<Image>> _cache = {};
 
   static Future<List<TileImage>> getTileImages({
-    String imagePath,
-    int dimensions,
-    List<int> state,
+    required String imagePath,
+    required int dimensions,
+    required List<int> state,
   }) async {
     List<Image> snap = await _snap(dimensions, imagePath);
     return List.generate(
@@ -22,7 +23,7 @@ class TileUtils {
   static Future<List<Image>> _snap(int dimensions, String imagePath) async {
     String key = "$imagePath#$dimensions";
     if (_cache.containsKey(key)) {
-      return _cache[key];
+      return Future.value(_cache[key]);
     } else {
       var data = await rootBundle.load('assets/$imagePath.jpg');
       var pngBytes = data.buffer.asUint8List();
@@ -34,10 +35,10 @@ class TileUtils {
 
   static List<Image> _splitImage(List<int> input, int dimensions) {
     // convert image to image from image package
-    image.Image img = image.decodeImage(input);
+    image.Image img = image.decodeImage(Uint8List.fromList(input))!;
     img = image.copyResizeCropSquare(
       img,
-      217 * (pow(dimensions, 2) ~/ dimensions),
+      size: 217 * (pow(dimensions, 2) ~/ dimensions),
     );
 
     int x = 0, y = 0;
@@ -48,7 +49,8 @@ class TileUtils {
     List<image.Image> parts = [];
     for (int i = 0; i < dimensions; i++) {
       for (int j = 0; j < dimensions; j++) {
-        parts.add(image.copyCrop(img, x, y, width, height));
+        parts
+            .add(image.copyCrop(img, x: x, y: y, width: width, height: height));
         x += width;
       }
       x = 0;

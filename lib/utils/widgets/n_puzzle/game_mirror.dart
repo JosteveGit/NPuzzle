@@ -6,7 +6,11 @@ class Mirror extends StatelessWidget {
   final String imagePath;
   final int dimensions;
 
-  const Mirror({Key key, this.imagePath, this.dimensions}) : super(key: key);
+  const Mirror({
+    Key? key,
+    required this.imagePath,
+    required this.dimensions,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 class PuzzleImage extends StatelessWidget {
   final bool isSelected;
   final String imagePath;
-  final double size;
+  final double? size;
   const PuzzleImage({
-    Key key,
+    Key? key,
     this.isSelected = false,
-    this.imagePath,
+    required this.imagePath,
     this.size,
   }) : super(key: key);
 

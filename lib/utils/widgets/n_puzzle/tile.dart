@@ -13,13 +13,13 @@ class Tile extends StatefulWidget {
   final Function(int indexOfNumberTag, int indexOfEmpty) onTap;
   final indexOfEmpty;
   final int dimensions;
-  final TileImage tileImage;
+  final TileImage? tileImage;
   const Tile({
-    Key key,
-    this.numberTag,
-    this.onTap,
-    this.indexOfNumberTag,
-    this.indexOfEmpty,
+    Key? key,
+    required this.numberTag,
+    required this.onTap,
+    required this.indexOfNumberTag,
+    required this.indexOfEmpty,
     this.dimensions = 3,
     this.tileImage,
   }) : super(key: key);
@@ -30,7 +30,7 @@ class Tile extends StatefulWidget {
 
 class _TileState extends State<Tile> {
   Offset tileOffset = Offset.zero;
-  int dimensions;
+  int dimensions = 3;
 
   @override
   void initState() {
@@ -55,7 +55,9 @@ class _TileState extends State<Tile> {
       top: tileOffset.dy,
       duration: Duration(milliseconds: 150),
       child: MouseRegion(
-        cursor:isConnectedToEmptySlot()  ? SystemMouseCursors.click : SystemMouseCursors.forbidden,
+        cursor: isConnectedToEmptySlot()
+            ? SystemMouseCursors.click
+            : SystemMouseCursors.forbidden,
         child: GestureDetector(
           onTap: () {
             if (isConnectedToEmptySlot()) {
@@ -84,7 +86,7 @@ class _TileState extends State<Tile> {
                   //     fontWeight: FontWeight.bold,
                   //   ),
                   // ),
-                  if (widget.tileImage != null) widget.tileImage.image,
+                  if (widget.tileImage != null) widget.tileImage!.image,
                 ],
               ),
             ),

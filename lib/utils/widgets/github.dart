@@ -3,7 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class GITHUB extends StatelessWidget {
   const GITHUB({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

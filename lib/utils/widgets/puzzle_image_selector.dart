@@ -5,15 +5,15 @@ import 'puzzle_image.dart';
 class PuzzleImageSelector extends StatelessWidget {
   final int selectedImageIndex;
   final List<String> images;
-  final double size;
+  final double? size;
   final Function(int index) onOptionTapped;
-  const PuzzleImageSelector(
-      {Key key,
-      this.selectedImageIndex,
-      this.images,
-      this.size,
-      this.onOptionTapped})
-      : super(key: key);
+  const PuzzleImageSelector({
+    Key? key,
+    required this.selectedImageIndex,
+    required this.images,
+    this.size,
+    required this.onOptionTapped,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

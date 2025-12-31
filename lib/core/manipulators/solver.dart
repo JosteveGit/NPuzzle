@@ -3,11 +3,11 @@ import 'package:eight_puzzle/core/models/node.dart';
 
 class Solver {
   static _NextSearchDetails _search({
-    Node node,
-    List<Node> frontierListx,
+    required Node node,
+    required List<Node> frontierListx,
     int maxFrontierListLengthx = 0,
     int maxExpandedNodesLengthx = 0,
-    Map expandedNodesx,
+    required Map expandedNodesx,
   }) {
     Map expandedNodes = expandedNodesx ?? {};
     int maxExpandedNodesLength = maxExpandedNodesLengthx;
@@ -114,9 +114,9 @@ class _NextSearchDetails {
   final Map expandedNodesx;
 
   _NextSearchDetails({
-    this.node,
-    this.frontierListx,
-    this.expandedNodesx,
+    required this.node,
+    required this.frontierListx,
+    required this.expandedNodesx,
     this.maxExpandedNodesLengthx = 0,
     this.maxFrontierListLengthx = 0,
   });

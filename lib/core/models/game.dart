@@ -2,7 +2,7 @@ import 'dart:math';
 
 class Game {
   final List<int> state;
-  int dimension;
+  late int dimension;
 
   Game(this.state) {
     dimension = sqrt(state.length).toInt();

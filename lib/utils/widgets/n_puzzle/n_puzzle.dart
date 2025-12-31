@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
+
 import 'package:eight_puzzle/core/manipulators/shuffler.dart';
 import 'package:eight_puzzle/core/manipulators/solver.dart';
 import 'package:eight_puzzle/core/models/node.dart';
 import 'package:eight_puzzle/utils/functions/tile_utils.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 import 'game_mirror.dart';
 import 'tile.dart';
@@ -17,7 +15,11 @@ class NPuzzle extends StatefulWidget {
   final String image;
   final int dimensions;
 
-  const NPuzzle({Key key, this.image, this.dimensions}) : super(key: key);
+  const NPuzzle({
+    Key? key,
+    required this.image,
+    required this.dimensions,
+  }) : super(key: key);
   @override
   _NPuzzleState createState() => _NPuzzleState();
 }
@@ -29,7 +31,7 @@ class _NPuzzleState extends State<NPuzzle> {
     initBoardAndState();
   }
 
-  String image;
+  String image = "";
   int dimensions = 0;
   List<int> state = [];
   List<TileImage> tileImages = [];
@@ -99,7 +101,7 @@ class _NPuzzleState extends State<NPuzzle> {
                             children: List.generate(
                               state.length,
                               (index) {
-                                TileImage tileImage;
+                                TileImage? tileImage;
                                 int tileImageIndex = tileImages.indexWhere(
                                   (tileImage) => tileImage.number == index + 1,
                                 );
@@ -149,12 +151,15 @@ class _NPuzzleState extends State<NPuzzle> {
                 },
                 child: Text(
                   "Shuffle",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                style: ButtonStyle(
-                  padding: MaterialStateProperty.all(
-                    EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.white,
                   ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                  backgroundColor: Colors.blue,
                 ),
               ),
             ),
@@ -167,10 +172,11 @@ class _NPuzzleState extends State<NPuzzle> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
+                  color: Colors.blue,
                 ),
               ),
               style: ButtonStyle(
-                padding: MaterialStateProperty.all(
+                padding: WidgetStateProperty.all(
                   EdgeInsets.symmetric(horizontal: 50, vertical: 20),
                 ),
               ),
@@ -199,7 +205,10 @@ class _NPuzzleState extends State<NPuzzle> {
   }
 
   void solveState() async {
-    Node bestNode = await compute(Solver.solve, Node(stateList: state));
+    Node bestNode = await compute(
+      Solver.solve,
+      Node(stateList: state),
+    );
     List<List<int>> states = [];
     Solver.isSolving = true;
     while (bestNode.parent != null) {
@@ -208,7 +217,7 @@ class _NPuzzleState extends State<NPuzzle> {
         return;
       }
       states.add(bestNode.stateList);
-      bestNode = bestNode.parent;
+      bestNode = bestNode.parent!;
     }
     for (int i = states.length - 1; i >= 0; i--) {
       if (Solver.shouldNotSolve) {

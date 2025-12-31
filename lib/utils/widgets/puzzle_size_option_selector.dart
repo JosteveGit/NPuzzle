@@ -6,9 +6,11 @@ import 'puzzle_size_option.dart';
 class PuzzleSizeOptionSelector extends StatelessWidget {
   final int selectedOptionIndex;
   final Function(int index) onOptionTapped;
-  const PuzzleSizeOptionSelector(
-      {Key key, this.selectedOptionIndex, this.onOptionTapped})
-      : super(key: key);
+  const PuzzleSizeOptionSelector({
+    Key? key,
+    required this.selectedOptionIndex,
+    required this.onOptionTapped,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +23,12 @@ class PuzzleSizeOptionSelector extends StatelessWidget {
           children: [
             Container(
               padding: EdgeInsets.symmetric(
-                vertical: 15,
+                vertical: 10,
                 horizontal: 20,
               ),
               child: Row(
                 children: List.generate(
-                  2,
+                  4,
                   (index) {
                     return GestureDetector(
                       onTap: () {
